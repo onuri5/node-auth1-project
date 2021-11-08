@@ -4,7 +4,6 @@ const Users = require("../users/users-model");
 const router = express.Router();
 
 const {
-  restricted,
   checkPasswordLength,
   checkUsernameExists,
   checkUsernameFree,
@@ -43,20 +42,16 @@ router.post("/login", checkUsernameExists, async (req, res, next) => {
   }
 });
 
-/**
-  3 [GET] /api/auth/logout
-
-  response for logged-in users:
-  status 200
-  {
-    "message": "logged out"
+router.get("/logout", (req, res, next) => {
+  if (!req.session.user) {
+    next({ message: "no session" });
   }
-
-  response for not-logged-in users:
-  status 200
-  {
-    "message": "no session"
-  }
- */
+  req.session.destroy((err) => {
+    if (err) {
+      return next({ message: "something went wrong" });
+    }
+    next({ status: 200, message: "logged out" });
+  });
+});
 
 module.exports = router;
