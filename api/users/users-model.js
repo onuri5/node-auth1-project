@@ -1,10 +1,10 @@
 const db = require("../../data/db-config");
 
 module.exports = {
-  find, 
+  find,
   findBy,
   findById,
-  add
+  add,
 };
 
 /**

@@ -1,10 +1,10 @@
 const Users = require("../users/users-model");
 
-module.exports = { 
+module.exports = {
   restricted,
   checkPasswordLength,
   checkUsernameExists,
-  checkUsernameFree
+  checkUsernameFree,
 };
 
 function restricted(req, res, next) {
@@ -18,21 +18,19 @@ function restricted(req, res, next) {
 function checkUsernameFree(req, res, next) {
   Users.find()
     .then((usersArr) => {
-      const free = usersArr.filter(
-        (username) => username === req.body.username
-      );
-      if (!free) {
-        next({ status: 401, message: "Username taken" });
-      } else {
-        next();
-      }
+      usersArr.map((user) => {
+        if (user.username === req.body.username) {
+          next({ status: 422, message: "username taken" });
+        }
+      });
+      next();
     })
     .catch(next);
 }
 
 async function checkUsernameExists(req, res, next) {
   const { username } = req.body;
-  const [ user ] = await Users.findBy({ username });
+  const [user] = await Users.findBy({ username });
   if (!user) {
     next({ status: 401, message: "Invalid credentials" });
   } else {
